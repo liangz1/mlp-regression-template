@@ -35,10 +35,16 @@ data:
   # or the `timestamp` at which to read data
   # version: 2
   # timestamp: 2022-06-01T00:00:00.000Z
+# specify the dataset to use for batch scoring.  All params serve the same function as in `data`
+data_scoring:
+  location: {{INGEST_SCORING_DATA_LOCATION}}
+  format: {{INGEST_SCORING_DATA_FORMAT|default('parquet')}}
+  custom_loader_method: steps.ingest.load_file_as_dataframe
+  sql: SELECT * FROM delta.`{{INGEST_SCORING_DATA_LOCATION}}`
 #
 # FIXME::REQUIRED: Specifies the target column name for model training and evaluation.
 #
-target_col: ""
+target_col: "Selling_Price"
 steps:
   split:
     # Train/validation/test split ratios
@@ -69,7 +75,7 @@ steps:
     # FIXME::REQUIRED: Specifies the name of the Registered Model to use when registering a trained
     #                  model to the MLflow Model Registry.
     #
-    model_name: ""
+    model_name: "Car_price"
     # Indicates whether or not a model that fails to meet performance thresholds should still
     # be registered to the MLflow Model Registry
     allow_non_validated_model: false
@@ -86,7 +92,7 @@ metrics:
   # FIXME::REQUIRED: Sets the primary metric to use to evaluate model performance. This primary
   #                  metric is used to select best performing models in MLflow UI as well as in
   #                  train and evaluation step.
-  primary: ""
+  primary: "root_mean_squared_error"
   #
   # FIXME::OPTIONAL: Defines custom performance metrics to compute during model development.
   #
